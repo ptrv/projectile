@@ -118,6 +118,12 @@ Otherwise consider the current directory the project root."
   :group 'projectile
   :type 'string)
 
+(defcustom projectile-use-gtags nil
+  "When non-nil, use GNU Global as tag system in Projectile."
+  :group 'projectile
+  :type 'boolean
+  :safe 'booleanp)
+
 (defcustom projectile-project-root-files
   '(".projectile"        ; projectile project marker
     ".git"               ; Git VCS root dir
@@ -1084,7 +1090,7 @@ With a prefix ARG asks for files (globbing-aware) which to grep in."
 (defun projectile-regenerate-tags ()
   "Regenerate the project's [e|g]tags."
   (interactive)
-  (if (boundp 'ggtags-mode)
+  (if (and projectile-use-gtags (boundp 'ggtags-mode))
       (progn
         (let* ((ggtags-project-root (projectile-project-root))
                (default-directory ggtags-project-root))
@@ -1099,7 +1105,7 @@ With a prefix ARG asks for files (globbing-aware) which to grep in."
 (defun projectile-find-tag ()
   "Find tag in project."
   (interactive)
-  (let ((tags (if (boundp 'ggtags-mode)
+  (let ((tags (if (and projectile-use-gtags (boundp 'ggtags-mode))
                   (progn
                     (ggtags-completion-table)
                     (projectile--tags ggtags-completion-table))
